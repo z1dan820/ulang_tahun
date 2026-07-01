@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Anis yang Cantik Jelita</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Poppins:wght@300;400;600&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #050505;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 40px 30px;
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1.2s ease, transform 1.2s ease;
+            display: none;
+        }
+
+        .glass-card.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            background: linear-gradient(45deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Container teks agar ukuran kartu stabil dan teks di tengah */
+        .typing-box {
+            min-height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .typing-text {
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: #e0e0e0;
+            text-align: center;
+            transition: opacity 0.6s ease;
+            opacity: 1;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 13px 32px;
+            border-radius: 30px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            margin-top: 25px;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 0 20px rgba(255, 154, 158, 0.4);
+            transform: translateY(-2px);
+        }
+
+        #intro-btn {
+            display: block;
+            margin: 20px auto 0 auto;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.3); }
+            70% { transform: scale(1.04); box-shadow: 0 0 0 12px rgba(255, 255, 255, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+        }
+
+        /* Romantic Voucher Design */
+        .voucher {
+            background: linear-gradient(135deg, #201419 0%, #11090c 100%);
+            border: 1px dashed rgba(255, 154, 158, 0.4);
+            border-radius: 16px;
+            padding: 22px;
+            margin-top: 25px;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            display: none;
+            opacity: 0;
+            transition: opacity 1.5s ease;
+            box-shadow: inset 0 0 15px rgba(255, 154, 158, 0.1);
+        }
+
+        .voucher::before, .voucher::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 24px;
+            height: 24px;
+            background-color: #050505;
+            border-radius: 50%;
+            transform: translateY(-50%);
+        }
+
+        .voucher::before { left: -12px; border-right: 1px dashed rgba(255, 154, 158, 0.4); }
+        .voucher::after { right: -12px; border-left: 1px dashed rgba(255, 154, 158, 0.4); }
+
+        .voucher-header {
+            font-family: 'Playfair Display', serif;
+            color: #ff9a9e;
+            font-size: 1.15rem;
+            letter-spacing: 1px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
+            padding-bottom: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .voucher-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .voucher-label {
+            font-size: 0.7rem;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .voucher-value {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .heart-beat {
+            display: inline-block;
+            animation: beat .4s infinite alternate;
+            transform-origin: center;
+        }
+
+        @keyframes beat{
+            to { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bg-music" src="lagu.mp3" loop></audio>
+
+    <canvas id="starfield"></canvas>
+
+    <div class="container">
+        <div id="screen-1" class="glass-card active">
+            <h1 style="font-size: 1.6rem; font-family: 'Poppins', sans-serif; font-weight: 300;">Ada pesan penting...</h1>
+            <button id="intro-btn" class="btn">Sentuh di sini, Sayang</button>
+        </div>
+
+        <div id="screen-2" class="glass-card">
+            <h1>Selamat Ulang Tahun ke-23, Anis.</h1>
+            <div class="typing-box">
+                <div class="typing-text" id="text-container"></div>
+            </div>
+            <button id="next-btn" class="btn" style="display: none;">Buka Dari Aku 🎁</button>
+        </div>
+
+        <div id="screen-3" class="glass-card">
+            <h1>Janji Setia</h1>
+            <p style="font-size: 0.9rem; color: #ccc; line-height: 1.6;">
+                Di hari spesial ini, aku bukan cuma mau ngasih ucapan biasa. Aku mau menyerahkan komitmen penuhku untuk selalu menjaga senyum sayang.
+            </p>
+            
+            <div class="voucher" id="love-voucher">
+                <div class="voucher-header">VOUCHER KASIH SAYANG SEUMUR HIDUP</div>
+                <div class="voucher-row">
+                    <div>
+                        <div class="voucher-label">Teruntuk Spesial</div>
+                        <div class="voucher-value">Anis Cantik Jelita 🤍</div>
+                    </div>
+                    <div>
+                        <div class="voucher-label">Dari Seseorang</div>
+                        <div class="voucher-value">Zidan Yang Menyayangimu</div>
+                    </div>
+                </div>
+                <div class="voucher-row">
+                    <div>
+                        <div class="voucher-label">Masa Berlaku</div>
+                        <div class="voucher-value" style="color: #ff9a9e;">Selamanya & Tanpa Batas</div>
+                    </div>
+                    <div>
+                        <div class="voucher-label">Kupon Code</div>
+                        <div class="voucher-value">ANIS-23-FOREVER</div>
+                    </div>
+                </div>
+                <div class="voucher-row" style="margin-bottom: 0; padding-top: 5px;">
+                    <div>
+                        <div class="voucher-label">Benefit Utama</div>
+                        <div class="voucher-value" style="font-size: 0.85rem; font-style: italic; color: #fecfef;">
+                            Pelukan hangat, pendengar setia, dan cinta kasih tanpa henti.
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <p style="margin-top: 25px; font-size: 1.2rem; color: #ff9a9e;"><span class="heart-beat">❤️</span></p>
+        </div>
+    </div>
+
+    <script>
+        // --- ANIMASI BACKGROUND BINTANG (STARFIELD) ---
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let width, height, stars;
+
+        function initStars() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            stars = [];
+            for (let i = 0; i < 150; i++) {
+                stars.push({
+                    x: Math.random() * width,
+                    y: Math.random() * height,
+                    radius: Math.random() * 1.3,
+                    vx: Math.floor(Math.random() * 40) - 20,
+                    vy: Math.floor(Math.random() * 40) - 20
+                });
+            }
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, width, height);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+            ctx.beginPath();
+            for (let i = 0; i < stars.length; i++) {
+                let star = stars[i];
+                ctx.moveTo(star.x, star.y);
+                ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2, true);
+            }
+            ctx.fill();
+            updateStars();
+            requestAnimationFrame(drawStars);
+        }
+
+        function updateStars() {
+            for (let i = 0; i < stars.length; i++) {
+                let star = stars[i];
+                star.x += star.vx / 100;
+                star.y += star.vy / 100;
+                if (star.x < 0 || star.x > width) star.vx = -star.vx;
+                if (star.y < 0 || star.y > height) star.vy = -star.vy;
+            }
+        }
+
+        window.addEventListener('resize', initStars);
+        initStars();
+        drawStars();
+
+        // --- SISTEM TYPING TEKS BERGANTI ---
+        const introBtn = document.getElementById('intro-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const screen1 = document.getElementById('screen-1');
+        const screen2 = document.getElementById('screen-2');
+        const screen3 = document.getElementById('screen-3');
+        const textContainer = document.getElementById('text-container');
+        const voucher = document.getElementById('love-voucher');
+        const bgMusic = document.getElementById('bg-music');
+
+        // Kalimat dipisah per baris/paragraf agar bergantian hilang-timbul
+        const phrases = [
+            "Hai Anis yang cantik jelita...",
+            "Bertambah lagi umur sayang hari ini. Terima kasih ya sudah bertahan, berjuang, dan selalu jadi versi terbaik dari diri sayang selama 23 tahun ini.",
+            "Aku tahu kadang dunia ini terasa berat, tapi aku beruntung banget bisa selalu nemenin sayang ngelewatin setiap prosesnya.",
+            "Semoga sayang selalu bahagia, selalu sehat, dan semua doa-doa baik yang sayang semogakan segera dikabulkan. Kebahagiaan sayang adalah hal terpenting buat aku."
+        ];
+
+        let phraseIndex = 0;
+        let charIndex = 0;
+
+        function typeWriter() {
+            if (phraseIndex < phrases.length) {
+                let currentPhrase = phrases[phraseIndex];
+                
+                if (charIndex < currentPhrase.length) {
+                    textContainer.innerHTML += currentPhrase.charAt(charIndex);
+                    charIndex++;
+                    setTimeout(typeWriter, 45); // Kecepatan ketik per karakter
+                } else {
+                    // Kalimat selesai diketik, beri jeda waktu untuk membaca (2.5 detik)
+                    setTimeout(() => {
+                        if (phraseIndex < phrases.length - 1) {
+                            // Efek teks menghilang (Fade out)
+                            textContainer.style.opacity = '0';
+                            
+                            setTimeout(() => {
+                                textContainer.innerHTML = ''; // Kosongkan teks lama
+                                textContainer.style.opacity = '1'; // Reset opasitas untuk kalimat baru
+                                phraseIndex++;
+                                charIndex = 0;
+                                typeWriter(); // Mulai ketik kalimat berikutnya
+                            }, 600); // Waktu jeda transisi menghilang selesai
+                        } else {
+                            // Jika ini kalimat terakhir, munculkan tombol next
+                            nextBtn.style.display = 'inline-block';
+                        }
+                    }, 2500); 
+                }
+            }
+        }
+
+        // Jalankan saat tombol pertama diklik
+        introBtn.addEventListener('click', () => {
+            // Putar lagu
+            bgMusic.play().catch(error => console.log("Izin audio dibutuhkan browser"));
+            
+            // Transisi ke layar kedua
+            screen1.classList.remove('active');
+            setTimeout(() => {
+                screen1.style.display = 'none';
+                screen2.style.display = 'block';
+                setTimeout(() => {
+                    screen2.classList.add('active');
+                    // Mulai efek ketikan setelah kartu muncul sempurna
+                    setTimeout(typeWriter, 500);
+                }, 50);
+            }, 600);
+        });
+
+        // Jalankan saat tombol menuju hadiah utama diklik
+        nextBtn.addEventListener('click', () => {
+            screen2.classList.remove('active');
+            setTimeout(() => {
+                screen2.style.display = 'none';
+                screen3.style.display = 'block';
+                setTimeout(() => {
+                    screen3.classList.add('active');
+                    // Munculkan voucher secara perlahan setelah layar utama aktif
+                    setTimeout(() => {
+                        voucher.style.display = 'block';
+                        setTimeout(() => {
+                            voucher.style.opacity = '1';
+                        }, 50);
+                    }, 800);
+                }, 50);
+            }, 600);
+        });
+    </script>
+</body>
+</html>
